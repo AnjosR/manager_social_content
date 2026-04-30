@@ -31,7 +31,7 @@ export class Action {
       throw new InvalidDateError()
     }
 
-    if (!images || !Array.isArray(images)) {
+    if (!Array.isArray(images)) {
       throw new InvalidMediaError()
     }
     if (images.length === 0 || images.length > 10) {
