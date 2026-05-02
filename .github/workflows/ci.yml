@@ -11,21 +11,24 @@ jobs:
   validate:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'yarn'
+  - name: Enable Corepack
+    run: corepack enable
 
-      - name: Enable Corepack
-        run: corepack enable
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version-file: '.nvmrc'
+      cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install --immutable
+  - name: Install dependencies
+    run: yarn install
 
-      - name: Run CI checks
-        run: yarn check:ci
+  - name: Install dependencies
+    run: yarn install --immutable
+
+  - name: Run CI checks
+    run: yarn check:ci
