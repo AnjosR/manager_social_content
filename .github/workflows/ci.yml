@@ -11,10 +11,11 @@ jobs:
   validate:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
 
+<<<<<<< HEAD
       - name: Enable Corepack
         run: corepack enable
 
@@ -26,6 +27,21 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
+=======
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version-file: '.nvmrc'
 
-      - name: Run CI checks
-        run: yarn check:ci
+  - name: Enable Corepack
+    run: corepack enable
+
+  - name: Install dependencies
+    run: yarn install
+>>>>>>> ec8d58e (fix: folders organization)
+
+  - name: Install dependencies
+    run: yarn install --immutable
+
+  - name: Run CI checks
+    run: yarn check:ci
