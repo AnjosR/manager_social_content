@@ -30,7 +30,7 @@
     "prepare": "husky"
   },
   "private": true,
-  "packageManager": "yarn@4.13.0",
+  "packageManager": "yarn@4.1.1",
   "keywords": [],
   "author": "Eyder Rios",
   "license": "MIT",
