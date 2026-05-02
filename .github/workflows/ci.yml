@@ -16,6 +16,7 @@ steps:
     uses: actions/checkout@v4
 
 <<<<<<< HEAD
+<<<<<<< HEAD
       - name: Enable Corepack
         run: corepack enable
 
@@ -28,13 +29,16 @@ steps:
       - name: Install dependencies
         run: yarn install --immutable
 =======
+=======
+  - name: Enable Corepack
+    run: corepack enable
+
+>>>>>>> c99ed40 (fix: folders organization)
   - name: Setup Node.js
     uses: actions/setup-node@v4
     with:
       node-version-file: '.nvmrc'
-
-  - name: Enable Corepack
-    run: corepack enable
+      cache: 'yarn'
 
   - name: Install dependencies
     run: yarn install
