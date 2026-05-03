@@ -1,18 +1,13 @@
-<<<<<<< HEAD
 import { Name } from '#src/domain/name'
-=======
-export class Name {
-  constructor(private readonly value: string) {
-    this.value = value.trim()
-  }
-
-  getValue(): string {
-    return this.value
-  }
-}
->>>>>>> 0411db3 (Refactor all test files on Domain)
+import { InvalidNameError } from '#src/domain/errors/name.error'
 
 describe('Name Entity', () => {
+  it.each(['', '  ', 'ab'])('Should throw InvalidNameError when name is invalid: "%s"', (invalidName) => {
+    expect(() => {
+      new Name(invalidName)
+    }).toThrow(InvalidNameError)
+  })
+
   it('Should create an Name instance when name is valid', () => {
     const validName = 'Joe Doe'
     const sut = new Name(validName)
