@@ -1,64 +1,13 @@
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
+import type { SignInInput } from '#src/application/DTO/sign-in-input'
+import { InvalidCredentialsError } from '#src/application/erros/Invalid-credentials-error'
+import type { PasswordComparer } from '#src/application/password-comparer-contract'
+import { SignInUseCase } from '#src/application/SignInUseCase'
+import type { TokenGenerator } from '#src/application/token-generator-contract'
+import type { UserRepository } from '#src/application/user-repository'
 import type { Email } from '#src/domain/email'
-import { InvalidPasswordError } from '#src/domain/errors/password.error'
 import type { Password } from '#src/domain/password'
-
-export class InvalidCredentialsError extends Error {
-  constructor(message = 'Invalid Credentials Error') {
-    super(message)
-  }
-}
-
-export type SignInInput = {
-  email: Email
-  password: Password
-}
-export type SignInOutput = {
-  accesToken: Promise<string>
-}
-
-export type User = {
-  id: string
-  email: Email
-  hashedPassword: string
-}
-
-export interface UseCase<input, output> {
-  execute(input: input): Promise<output>
-}
-
-interface UserRepository {
-  findByEmail(value: Email): Promise<User | null>
-}
-interface PasswordComparer {
-  comparer(plainPassword: Password, hashedPassword: string): Promise<boolean>
-}
-interface TokenGenerator {
-  generate(userId: string): Promise<string>
-}
-
-export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
-  constructor(
-    private readonly userRepository: UserRepository,
-    private readonly passwordComparer: PasswordComparer,
-    private readonly tokenGenerator: TokenGenerator,
-  ) {}
-
-  async execute(input: SignInInput): Promise<SignInOutput> {
-    const user = await this.userRepository.findByEmail(input.email)
-    if (!user) {
-      throw new InvalidCredentialsError()
-    }
-    const result = await this.passwordComparer.comparer(input.password, user.hashedPassword)
-    if (!result) {
-      throw new InvalidPasswordError()
-    }
-    const accesToken = this.tokenGenerator.generate(user.id)
-
-    return { accesToken }
-  }
-}
 
 describe('SignIn UseCase', () => {
   let input: SignInInput
