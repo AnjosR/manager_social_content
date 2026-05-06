@@ -1,11 +1,11 @@
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
-import type { SignInInput } from '#src/application/DTO/sign-in-input'
-import { InvalidCredentialsError } from '#src/application/erros/Invalid-credentials-error'
-import type { PasswordComparer } from '#src/application/password-comparer-contract'
-import { SignInUseCase } from '#src/application/SignInUseCase'
-import type { TokenGenerator } from '#src/application/token-generator-contract'
-import type { UserRepository } from '#src/application/user-repository'
+import { InvalidCredentialsError } from '#src/application/erros/invalid-credentials-error'
+import type { HashComparer } from '#src/application/interfaces/hash-comparer'
+import type { TokenGenerator } from '#src/application/interfaces/token-generator'
+import type { UserRepository } from '#src/application/interfaces/user-repository'
+import type { SignInInput } from '#src/application/sign-in-use-case'
+import { SignInUseCase } from '#src/application/sign-in-use-case'
 import type { Email } from '#src/domain/email'
 import type { Password } from '#src/domain/password'
 
@@ -15,7 +15,7 @@ describe('SignIn UseCase', () => {
   let password: MockProxy<Password>
   let hashedPassword: string
   let userRepository: MockProxy<UserRepository>
-  let passwordComparer: MockProxy<PasswordComparer>
+  let passwordComparer: MockProxy<HashComparer>
   let tokenGenerator: MockProxy<TokenGenerator>
   let acessToken: string
 
@@ -34,8 +34,8 @@ describe('SignIn UseCase', () => {
       hashedPassword: hashedPassword,
     })
 
-    passwordComparer = mock<PasswordComparer>()
-    passwordComparer.comparer.mockResolvedValue(true)
+    passwordComparer = mock<HashComparer>()
+    passwordComparer.compare.mockResolvedValue(true)
 
     acessToken = 'any_acess_token'
     tokenGenerator = mock<TokenGenerator>()
@@ -48,50 +48,53 @@ describe('SignIn UseCase', () => {
 
     sut = new SignInUseCase(userRepository, passwordComparer, tokenGenerator)
   })
-  it('Should garanted UserRepository is called with correct e-mail', async () => {
-    await sut.execute(input)
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(userRepository.findByEmail).toHaveBeenLastCalledWith(email)
-  })
-  it('Should garanted PasswordComparer is called with plain password and hashed password', async () => {
-    await sut.execute(input)
+  describe('Behavior', () => {
+    it('Should garanted UserRepository is called with correct e-mail', async () => {
+      await sut.execute(input)
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(passwordComparer.comparer).toHaveBeenLastCalledWith(password, hashedPassword)
-  })
-  it('Should garanted tokenGenerator is called with correct user id', async () => {
-    await sut.execute(input)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(userRepository.findByEmail).toHaveBeenLastCalledWith(email)
+    })
+    it('Should garanted HashComparer is called with plain password and hashed password', async () => {
+      await sut.execute(input)
 
-    const user = {
-      id: 'any_id',
-      email: email,
-      hashedPassword: hashedPassword,
-    }
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(passwordComparer.compare).toHaveBeenLastCalledWith(password, hashedPassword)
+    })
+    it('Should garanted tokenGenerator is called with correct user id', async () => {
+      await sut.execute(input)
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(tokenGenerator.generate).toHaveBeenLastCalledWith(user.id)
-  })
+      const user = {
+        id: 'any_id',
+        email: email,
+        hashedPassword: hashedPassword,
+      }
 
-  it('Should return accessToken when valid credentials', async () => {
-    await sut.execute(input)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(tokenGenerator.generate).toHaveBeenLastCalledWith(user.id)
+    })
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(tokenGenerator.generate).toHaveResolvedWith(acessToken)
-  })
-  it('Should throw InvalidCredentialsError when email or password not exists', async () => {
-    email = mock<Email>()
-    email.getValue.mockResolvedValueOnce('any_email_nonexistent')
-    password = mock<Password>()
-    password.getValue.mockResolvedValueOnce('any_wrong_password')
+    it('Should return accessToken when valid credentials', async () => {
+      await sut.execute(input)
 
-    input = {
-      email: email,
-      password: password,
-    }
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(tokenGenerator.generate).toHaveResolvedWith(acessToken)
+    })
+    it('Should throw InvalidCredentialsError when email or password not exists', async () => {
+      email = mock<Email>()
+      email.getValue.mockReturnValue('any_email_nonexistent')
+      password = mock<Password>()
+      password.getValue.mockReturnValue('any_wrong_password')
 
-    userRepository.findByEmail.mockResolvedValueOnce(null)
+      input = {
+        email: email,
+        password: password,
+      }
 
-    await expect(sut.execute(input)).rejects.toThrow(InvalidCredentialsError)
+      userRepository.findByEmail.mockResolvedValueOnce(null)
+
+      await expect(sut.execute(input)).rejects.toThrow(InvalidCredentialsError)
+    })
   })
 })
