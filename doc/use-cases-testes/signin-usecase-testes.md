@@ -26,8 +26,8 @@ Para testar o `SignInUseCase` isoladamente, precisamos de mocks para:
 
 ## Tratamento de Erros (Infraestrutura)
 
-- [ ] Deve garantir que o caso de uso repassa (lança) a exceção se o `UserRepository` falhar (ex: erro de conexão com banco).
-- [ ] Deve garantir que o caso de uso repassa (lança) a exceção se o `HashComparer` falhar.
-- [ ] Deve garantir que o caso de uso repassa (lança) a exceção se o `TokenGenerator` falhar.
+- [x] Deve garantir que o caso de uso repassa (lança) a exceção se o `UserRepository` falhar (ex: erro de conexão com banco).
+- [x] Deve garantir que o caso de uso repassa (lança) a exceção se o `HashComparer` falhar.
+- [xs] Deve garantir que o caso de uso repassa (lança) a exceção se o `TokenGenerator` falhar.
 
 ---

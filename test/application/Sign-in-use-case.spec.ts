@@ -8,6 +8,9 @@ import type { SignInInput } from '#src/application/sign-in-use-case'
 import { SignInUseCase } from '#src/application/sign-in-use-case'
 import type { Email } from '#src/domain/email'
 import type { Password } from '#src/domain/password'
+import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
+import { HashComparerError } from '#src/application/erros/hash-comparer-error'
+import { TokenGenerationError } from '#src/application/erros/token-generator-error'
 
 describe('SignIn UseCase', () => {
   let input: SignInInput
@@ -15,7 +18,7 @@ describe('SignIn UseCase', () => {
   let password: MockProxy<Password>
   let hashedPassword: string
   let userRepository: MockProxy<UserRepository>
-  let passwordComparer: MockProxy<HashComparer>
+  let hashComparer: MockProxy<HashComparer>
   let tokenGenerator: MockProxy<TokenGenerator>
   let acessToken: string
 
@@ -34,8 +37,8 @@ describe('SignIn UseCase', () => {
       hashedPassword: hashedPassword,
     })
 
-    passwordComparer = mock<HashComparer>()
-    passwordComparer.compare.mockResolvedValue(true)
+    hashComparer = mock<HashComparer>()
+    hashComparer.compare.mockResolvedValue(true)
 
     acessToken = 'any_acess_token'
     tokenGenerator = mock<TokenGenerator>()
@@ -46,7 +49,7 @@ describe('SignIn UseCase', () => {
       password: password,
     }
 
-    sut = new SignInUseCase(userRepository, passwordComparer, tokenGenerator)
+    sut = new SignInUseCase(userRepository, hashComparer, tokenGenerator)
   })
 
   describe('Behavior', () => {
@@ -60,7 +63,7 @@ describe('SignIn UseCase', () => {
       await sut.execute(input)
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(passwordComparer.compare).toHaveBeenLastCalledWith(password, hashedPassword)
+      expect(hashComparer.compare).toHaveBeenLastCalledWith(password, hashedPassword)
     })
     it('Should garanted tokenGenerator is called with correct user id', async () => {
       await sut.execute(input)
@@ -95,6 +98,30 @@ describe('SignIn UseCase', () => {
       userRepository.findByEmail.mockResolvedValueOnce(null)
 
       await expect(sut.execute(input)).rejects.toThrow(InvalidCredentialsError)
+    })
+  })
+
+  describe('Infrastructure', () => {
+    it('Should throw DataBaseConnectionError if userRepository failure', async () => {
+      userRepository.findByEmail.mockImplementation(() => {
+        throw new DataBaseConnectionError()
+      })
+
+      await expect(() => sut.execute(input)).rejects.toThrow(DataBaseConnectionError)
+    })
+    it('Should throw HashComparerError if HashComparer failure while comparing with plain_password', async () => {
+      hashComparer.compare.mockImplementation(() => {
+        throw new HashComparerError()
+      })
+
+      await expect(() => sut.execute(input)).rejects.toThrow(HashComparerError)
+    })
+    it('Should throw TokenGenerationError if token generator failure', async () => {
+      tokenGenerator.generate.mockImplementation(() => {
+        throw new TokenGenerationError()
+      })
+
+      await expect(() => sut.execute(input)).rejects.toThrow(TokenGenerationError)
     })
   })
 })
