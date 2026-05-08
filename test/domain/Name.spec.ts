@@ -1,4 +1,4 @@
-import { Name } from '#src/domain/name'
+import { Name } from '#src/domain/valueObjects/name'
 
 describe('Name Entity', () => {
   it('Should create an Name instance when name is valid', () => {

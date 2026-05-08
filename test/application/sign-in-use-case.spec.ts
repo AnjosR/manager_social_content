@@ -17,12 +17,14 @@ describe('SignIn UseCase', () => {
   let input: SignInInput
   let email: MockProxy<Email>
   let password: MockProxy<Password>
-  let uniqueEntityId: MockProxy<UniqueEntityId>
   let hashedPassword: string
   let userRepository: MockProxy<UserRepository>
   let hashComparer: MockProxy<HashComparer>
   let tokenGenerator: MockProxy<TokenGenerator>
   let acessToken: string
+
+  // 1. Declare a variável aqui para que ela fique visível nos testes abaixo
+  let uniqueEntityId: UniqueEntityId
 
   let sut: SignInUseCase
 
@@ -31,13 +33,15 @@ describe('SignIn UseCase', () => {
     email.getValue.mockReturnValue('any@email.com')
     password = mock<Password>()
     password.getValue.mockReturnValue('any_plain_password')
-    uniqueEntityId = mock<UniqueEntityId>()
-    uniqueEntityId.toString.mockReturnValue('any_valid_id')
+
+    // 2. Remova o const daqui e use a variável global
+    uniqueEntityId = { toString: () => 'any_valid_id' } as UniqueEntityId
+
     hashedPassword = 'any_hashed_password'
+
     const userMock = mock<User>()
     userMock.getHashPassword.mockReturnValue(hashedPassword)
-
-    Object.defineProperty(userMock, 'id', { get: () => uniqueEntityId })
+    ;(userMock as unknown as { id: UniqueEntityId }).id = uniqueEntityId
 
     userRepository = mock<UserRepository>()
     userRepository.findByEmail.mockResolvedValue(userMock)
@@ -49,46 +53,35 @@ describe('SignIn UseCase', () => {
     tokenGenerator = mock<TokenGenerator>()
     tokenGenerator.generate.mockResolvedValue(acessToken)
 
-    input = {
-      email: email,
-      password: password,
-    }
-
+    input = { email, password }
     sut = new SignInUseCase(userRepository, hashComparer, tokenGenerator)
   })
 
   describe('Behavior', () => {
     it('Should garanted UserRepository is called with correct e-mail', async () => {
       await sut.execute(input)
-
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(userRepository.findByEmail).toHaveBeenLastCalledWith(email)
     })
+
     it('Should garanted HashComparer is called with plain password and hashed password', async () => {
       await sut.execute(input)
-
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(hashComparer.compare).toHaveBeenLastCalledWith(password, hashedPassword)
     })
+
     it('Should garanted tokenGenerator is called with correct user id', async () => {
       await sut.execute(input)
-
-      const user = {
-        id: 'any_id',
-        email: email,
-        hashedPassword: hashedPassword,
-      }
-
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(tokenGenerator.generate).toHaveBeenLastCalledWith(user.id)
+      expect(tokenGenerator.generate).toHaveBeenLastCalledWith(uniqueEntityId)
     })
 
     it('Should return accessToken when valid credentials', async () => {
       await sut.execute(input)
-
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(tokenGenerator.generate).toHaveResolvedWith(acessToken)
     })
+
     it('Should throw InvalidCredentialsError when email or password not exists', async () => {
       email = mock<Email>()
       email.getValue.mockReturnValue('any_email_nonexistent')

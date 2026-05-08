@@ -28,8 +28,8 @@ export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
       throw new InvalidCredentialsError()
     }
 
-    const passwordMatches = await this.hashComparer.compare(input.password, user.getHashPassword())
-    if (!passwordMatches) {
+    const isValid = await this.hashComparer.compare(input.password, user.getHashPassword())
+    if (!isValid) {
       throw new InvalidCredentialsError()
     }
 
