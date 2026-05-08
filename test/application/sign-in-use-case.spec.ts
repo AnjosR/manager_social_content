@@ -1,21 +1,23 @@
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
-import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
-import { HashComparerError } from '#src/application/erros/hash-comparer-error'
-import { InvalidCredentialsError } from '#src/application/erros/invalid-credentials-error'
-import { TokenGenerationError } from '#src/application/erros/token-generator-error'
-import type { HashComparer } from '#src/application/interfaces/hash-comparer'
-import type { TokenGenerator } from '#src/application/interfaces/token-generator'
-import type { UserRepository } from '#src/application/interfaces/user-repository'
-import type { SignInInput } from '#src/application/sign-in-use-case'
-import { SignInUseCase } from '#src/application/sign-in-use-case'
-import type { Email } from '#src/domain/email'
-import type { Password } from '#src/domain/password'
+import { DataBaseConnectionError } from '#src/application/errors/database-connection-error'
+import { HashComparerError } from '#src/application/errors/hash-comparer-error'
+import { InvalidCredentialsError } from '#src/application/errors/invalid-credentials-error'
+import { TokenGenerationError } from '#src/application/errors/token-generator-error'
+import type { HashComparer } from '#src/application/interfaces/cryptography/hash-comparer'
+import type { TokenGenerator } from '#src/application/interfaces/cryptography/token-generator'
+import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
+import { SignInUseCase, type SignInInput } from '#src/application/usecase/auth/sign-in-use-case'
+import type { User } from '#src/domain/entity/user'
+import type { Email } from '#src/domain/valueObjects/email'
+import type { Password } from '#src/domain/valueObjects/password'
+import type { UniqueEntityId } from '#src/domain/valueObjects/uniqueId'
 
 describe('SignIn UseCase', () => {
   let input: SignInInput
   let email: MockProxy<Email>
   let password: MockProxy<Password>
+  let uniqueEntityId: MockProxy<UniqueEntityId>
   let hashedPassword: string
   let userRepository: MockProxy<UserRepository>
   let hashComparer: MockProxy<HashComparer>
@@ -26,16 +28,19 @@ describe('SignIn UseCase', () => {
 
   beforeEach(() => {
     email = mock<Email>()
-    email.getValue.mockResolvedValue('any@email.com')
+    email.getValue.mockReturnValue('any@email.com')
     password = mock<Password>()
-    password.getValue.mockResolvedValue('any_plain_password')
+    password.getValue.mockReturnValue('any_plain_password')
+    uniqueEntityId = mock<UniqueEntityId>()
+    uniqueEntityId.toString.mockReturnValue('any_valid_id')
     hashedPassword = 'any_hashed_password'
+    const userMock = mock<User>()
+    userMock.getHashPassword.mockReturnValue(hashedPassword)
+
+    Object.defineProperty(userMock, 'id', { get: () => uniqueEntityId })
+
     userRepository = mock<UserRepository>()
-    userRepository.findByEmail.mockResolvedValue({
-      id: 'any_id',
-      email: email,
-      hashedPassword: hashedPassword,
-    })
+    userRepository.findByEmail.mockResolvedValue(userMock)
 
     hashComparer = mock<HashComparer>()
     hashComparer.compare.mockResolvedValue(true)

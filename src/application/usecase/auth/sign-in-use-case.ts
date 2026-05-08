@@ -1,11 +1,11 @@
-import type { Email } from '#src/domain/email'
-import type { Password } from '#src/domain/password'
+import type { Email } from '#src/domain/valueObjects/email'
+import type { Password } from '#src/domain/valueObjects/password'
 
-import { InvalidCredentialsError } from './erros/invalid-credentials-error.js'
-import type { HashComparer } from './interfaces/hash-comparer.js'
-import type { TokenGenerator } from './interfaces/token-generator.js'
-import type { UseCase } from './interfaces/use-case.js'
-import type { UserRepository } from './interfaces/user-repository.js'
+import { InvalidCredentialsError } from '../../errors/invalid-credentials-error.js'
+import type { HashComparer } from '../../interfaces/cryptography/hash-comparer.js'
+import type { TokenGenerator } from '../../interfaces/cryptography/token-generator.js'
+import type { UserRepository } from '../../interfaces/repositories/user-repository.js'
+import type { UseCase } from '../use-case.js'
 
 export type SignInInput = {
   email: Email
@@ -28,7 +28,7 @@ export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
       throw new InvalidCredentialsError()
     }
 
-    const passwordMatches = await this.hashComparer.compare(input.password, user.hashedPassword)
+    const passwordMatches = await this.hashComparer.compare(input.password, user.getHashPassword())
     if (!passwordMatches) {
       throw new InvalidCredentialsError()
     }

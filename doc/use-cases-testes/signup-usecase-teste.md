@@ -4,7 +4,7 @@
 > Módulo: Acesso / Administradores  
 > Caso de uso: `SignUpUseCase`  
 > Estratégia: TDD + SOLID + Clean Architecture  
-> Framework sugerido: Vitest  
+> Framework sugerido: Vitest
 
 ---
 
@@ -25,11 +25,11 @@ Esse caso de uso é responsável por:
 
 ## 2. Regras de negócio envolvidas
 
-| Código | Regra | Descrição |
-| :-- | :-- | :-- |
-| RN07 | E-mail único | Não deve permitir dois administradores com o mesmo e-mail. |
-| RN08 | Senha segura | A senha deve ter tamanho mínimo e ser armazenada como hash. |
-| RN09 | Nome válido | O nome do administrador deve possuir pelo menos 3 caracteres úteis. |
+| Código | Regra        | Descrição                                                           |
+| :----- | :----------- | :------------------------------------------------------------------ |
+| RN07   | E-mail único | Não deve permitir dois administradores com o mesmo e-mail.          |
+| RN08   | Senha segura | A senha deve ter tamanho mínimo e ser armazenada como hash.         |
+| RN09   | Nome válido  | O nome do administrador deve possuir pelo menos 3 caracteres úteis. |
 
 ---
 
@@ -133,6 +133,7 @@ const validInput = {
 - [ ] Deve garantir que o caso de uso repassa a exceção se o `UserRepository.save` falhar.
 
 ---
+
 # 7. Ordem sugerida para implementação via TDD
 
 Uma boa ordem para implementar os testes é começar pelo fluxo mais simples e depois adicionar as regras de negócio.
