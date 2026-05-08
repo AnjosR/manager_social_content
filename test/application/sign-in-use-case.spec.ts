@@ -1,6 +1,9 @@
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
+import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
+import { HashComparerError } from '#src/application/erros/hash-comparer-error'
 import { InvalidCredentialsError } from '#src/application/erros/invalid-credentials-error'
+import { TokenGenerationError } from '#src/application/erros/token-generator-error'
 import type { HashComparer } from '#src/application/interfaces/hash-comparer'
 import type { TokenGenerator } from '#src/application/interfaces/token-generator'
 import type { UserRepository } from '#src/application/interfaces/user-repository'
@@ -8,9 +11,6 @@ import type { SignInInput } from '#src/application/sign-in-use-case'
 import { SignInUseCase } from '#src/application/sign-in-use-case'
 import type { Email } from '#src/domain/email'
 import type { Password } from '#src/domain/password'
-import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
-import { HashComparerError } from '#src/application/erros/hash-comparer-error'
-import { TokenGenerationError } from '#src/application/erros/token-generator-error'
 
 describe('SignIn UseCase', () => {
   let input: SignInInput
