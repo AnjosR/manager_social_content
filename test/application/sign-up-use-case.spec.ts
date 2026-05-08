@@ -1,35 +1,42 @@
-// import { mock, type MockProxy } from 'vitest-mock-extended'
+/* eslint-disable @typescript-eslint/unbound-method */
+import { mock, type MockProxy } from 'vitest-mock-extended'
 
-// import type { UserRepository } from '#src/application/interfaces/user-repository'
-// import { SignUpUseCase, type SignUpInput } from '#src/application/sign-up-use-case'
-// import type { Email } from '#src/domain/email'
-// import { Name } from '#src/domain/name'
-// import type { Password } from '#src/domain/password'
+import type { IdGenerator } from '#src/application/interfaces/cryptography/id-generator'
+import type { PasswordHasher } from '#src/application/interfaces/cryptography/password-hasher'
+import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
+import { SignUpUseCase, type SignUpInput } from '#src/application/usecase/auth/sign-up-use-case'
+import { Email } from '#src/domain/valueObjects/email'
 
-// describe('SignIn UseCase', () => {
-//   let input: SignUpInput
-//   let email: MockProxy<Email>
-//   let password: MockProxy<Password>
-//   let userRepository: MockProxy<UserRepository>
+describe('Sign Up Use Case', () => {
+  let input: SignUpInput
+  let userRepository: MockProxy<UserRepository>
+  let idGenerator: MockProxy<IdGenerator>
+  let passwordHasher: MockProxy<PasswordHasher>
+  let sut: SignUpUseCase
 
-//   let sut: SignUpUseCase
+  beforeEach(() => {
+    userRepository = mock<UserRepository>()
+    userRepository.findByEmail.mockResolvedValue(null)
+    userRepository.save.mockResolvedValue()
 
-//   beforeEach(() => {
-//     password = mock<Password>()
-//     password.getValue.mockResolvedValue('any_plain_password')
-//     email = mock<Email>()
-//     email.getValue.mockResolvedValue('joedoe@email.com')
-//     input = {
-//       name: new Name('joe Doe'),
-//       email: email,
-//       password: password,
-//     }
+    passwordHasher = mock<PasswordHasher>()
+    passwordHasher.hash.mockResolvedValue('any_hashed_password')
 
-//     sut = new SignUpUseCase()
-//   })
+    idGenerator = mock<IdGenerator>()
+    idGenerator.generate.mockResolvedValue('any_valid_id')
 
-//   it('Should garanted findByEmail is called when normalized Email', async () => {
-//     const result = sut.execute(input)
-//     expect(userRepository.findByEmail())
-//   })
-// })
+    input = {
+      name: 'any_name',
+      email: 'any@email.com',
+      password: 'J@eD3.eio',
+    }
+
+    sut = new SignUpUseCase(userRepository, passwordHasher, idGenerator)
+  })
+
+  it('Should garanted findByEmail is called when normalized E-mail', async () => {
+    await sut.execute(input)
+
+    expect(userRepository.findByEmail).toHaveBeenCalledWith(new Email('any@email.com'))
+  })
+})
