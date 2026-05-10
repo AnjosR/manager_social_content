@@ -1,6 +1,7 @@
 import { Entity } from './entity.js'
 
 type ContentProps = {
+  authorId: string
   title: string
   description: string
   Actiondate: Date
@@ -19,5 +20,8 @@ export class Content extends Entity<ContentProps> {
   }
   get imagesUrl() {
     return this.props.imagesUrl
+  }
+  get authorId() {
+    return this.props.authorId
   }
 }
