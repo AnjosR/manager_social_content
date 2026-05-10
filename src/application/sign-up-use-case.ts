@@ -1,4 +1,5 @@
 import { Email } from '#src/domain/email'
+import { User } from '#src/domain/entity/user'
 import { InvalidEmailError } from '#src/domain/errors/email.error'
 import { Name } from '#src/domain/name'
 import { Password } from '#src/domain/password'
@@ -14,30 +15,33 @@ export type SignUpInput = {
 }
 
 export type SignUpOutput = {
-  user: {
-    id: string
-    name: string
-    createdAt: string
-  }
+  id: string
+  name: string
+  createdAt: Date
 }
 
-export class SignUpUseCase implements UseCase<SignUpInput, void> {
+export class SignUpUseCase implements UseCase<SignUpInput, SignUpOutput> {
   constructor(
     private readonly userRepository: UserRepository,
-    private passwordHasher: PasswordHasher,
+    private readonly passwordHasher: PasswordHasher,
   ) {}
 
-  async execute({ name, email, password }: SignUpInput): Promise<void> {
-    const _normalizedName = new Name(name)
+  async execute({ name, email, password }: SignUpInput): Promise<SignUpOutput> {
+    const normalizedName = new Name(name)
     const normalizedEmail = new Email(email)
-    const _normalizedPassword = new Password(password)
+    const normalizedPassword = new Password(password)
 
     const emailExists = await this.userRepository.findByEmail(normalizedEmail)
-
     if (emailExists) {
       throw new InvalidEmailError('Email Already Exists')
     }
 
-    const _hashedPassword = await this.passwordHasher.hash(password)
+    const passwordHash = await this.passwordHasher.hash(normalizedPassword)
+    const createdAt = new Date()
+
+    const user = new User({ name: normalizedName.getValue(), email: normalizedEmail.getValue(), passwordHash })
+    await this.userRepository.save(user)
+
+    return { id: user.id.toValue(), name: normalizedName.getValue(), createdAt }
   }
 }

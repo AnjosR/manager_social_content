@@ -1,35 +1,74 @@
-// import { mock, type MockProxy } from 'vitest-mock-extended'
+/* eslint-disable @typescript-eslint/unbound-method */
+import { mock, type MockProxy } from 'vitest-mock-extended'
 
-// import type { UserRepository } from '#src/application/interfaces/user-repository'
-// import { SignUpUseCase, type SignUpInput } from '#src/application/sign-up-use-case'
-// import type { Email } from '#src/domain/email'
-// import { Name } from '#src/domain/name'
-// import type { Password } from '#src/domain/password'
+import type { PasswordHasher } from '#src/application/interfaces/password-hasher'
+import type { UserRepository } from '#src/application/interfaces/user-repository'
+import { SignUpUseCase, type SignUpInput } from '#src/application/sign-up-use-case'
+import { Email } from '#src/domain/email'
+import { Password } from '#src/domain/password'
 
-// describe('SignIn UseCase', () => {
-//   let input: SignUpInput
-//   let email: MockProxy<Email>
-//   let password: MockProxy<Password>
-//   let userRepository: MockProxy<UserRepository>
+describe('Sign Up UseCase', () => {
+  let input: SignUpInput
+  let userRepository: MockProxy<UserRepository>
+  let passwordHasher: MockProxy<PasswordHasher>
+  let passwordHash: string
 
-//   let sut: SignUpUseCase
+  let sut: SignUpUseCase
+  beforeEach(() => {
+    input = {
+      name: 'joe Doe',
+      email: 'joe@doe.com',
+      password: '1@3Ksl.@#sao',
+    }
 
-//   beforeEach(() => {
-//     password = mock<Password>()
-//     password.getValue.mockResolvedValue('any_plain_password')
-//     email = mock<Email>()
-//     email.getValue.mockResolvedValue('joedoe@email.com')
-//     input = {
-//       name: new Name('joe Doe'),
-//       email: email,
-//       password: password,
-//     }
+    userRepository = mock<UserRepository>()
+    passwordHasher = mock<PasswordHasher>()
+    passwordHash = 'hashed_password'
+    passwordHasher.hash.mockResolvedValue(passwordHash)
 
-//     sut = new SignUpUseCase()
-//   })
+    sut = new SignUpUseCase(userRepository, passwordHasher)
+  })
 
-//   it('Should garanted findByEmail is called when normalized Email', async () => {
-//     const result = sut.execute(input)
-//     expect(userRepository.findByEmail())
-//   })
-// })
+  it('Should garanted findByEmail is called when E-mail is normalized', async () => {
+    await sut.execute(input)
+
+    expect(userRepository.findByEmail).toHaveBeenCalledWith(new Email(input.email))
+  })
+
+  it('Should garanted passwordHasher is called with plain text informed', async () => {
+    await sut.execute(input)
+
+    expect(passwordHasher.hash).toHaveBeenCalledWith(new Password(input.password))
+  })
+  it('Should garanted IdGenerator is called for generate new ID for user', async () => {
+    const userCreated = await sut.execute(input)
+
+    expect(userCreated.id).toBeDefined()
+    expect(userCreated.id).not.toBe('')
+  })
+
+  it('Should garanted UserRepository.save is called with the correct user data', async () => {
+    await sut.execute(input)
+
+    expect(userRepository.save).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: input.name,
+        email: input.email,
+        passwordHash,
+      }),
+    )
+  })
+
+  it('Should garanted the user is saved with passwordHash, not plain password', async () => {
+    await sut.execute(input)
+
+    expect(userRepository.save).toHaveBeenCalledWith(expect.objectContaining({ passwordHash }))
+    expect(userRepository.save).not.toHaveBeenCalledWith(expect.objectContaining({ passwordHash: input.password }))
+  })
+
+  it('Should garanted the output returns createdAt as a Date', async () => {
+    const output = await sut.execute(input)
+
+    expect(output.createdAt).toBeInstanceOf(Date)
+  })
+})

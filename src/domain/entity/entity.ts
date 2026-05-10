@@ -1,6 +1,6 @@
 import { UniqueEntityId } from '../uniqueId.js'
 
-export class Entity<Props> {
+export abstract class Entity<Props> {
   private _id: UniqueEntityId
   protected props: Props
 
@@ -8,7 +8,7 @@ export class Entity<Props> {
     return this._id
   }
 
-  protected constructor(props: Props, id?: UniqueEntityId) {
+  constructor(props: Props, id?: UniqueEntityId) {
     this.props = props
     this._id = id ?? new UniqueEntityId()
   }
