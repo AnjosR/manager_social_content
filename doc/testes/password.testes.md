@@ -1,4 +1,4 @@
-****# Documentação de Casos de Teste: Value Object - Password
+\*\*\*\*# Documentação de Casos de Teste: Value Object - Password
 
 Este documento lista todos os cenários de testes necessários para garantir a segurança e integridade do Value Object `Password` utilizando a metodologia TDD.
 

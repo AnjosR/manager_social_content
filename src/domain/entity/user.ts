@@ -4,6 +4,7 @@ type UserProps = {
   name: string
   email: string
   passwordHash: string
+  createdAt: Date
 }
 
 export class User extends Entity<UserProps> {

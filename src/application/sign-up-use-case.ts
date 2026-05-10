@@ -39,7 +39,12 @@ export class SignUpUseCase implements UseCase<SignUpInput, SignUpOutput> {
     const passwordHash = await this.passwordHasher.hash(normalizedPassword)
     const createdAt = new Date()
 
-    const user = new User({ name: normalizedName.getValue(), email: normalizedEmail.getValue(), passwordHash })
+    const user = new User({
+      name: normalizedName.getValue(),
+      email: normalizedEmail.getValue(),
+      passwordHash,
+      createdAt,
+    })
     await this.userRepository.save(user)
 
     return { id: user.id.toValue(), name: normalizedName.getValue(), createdAt }
