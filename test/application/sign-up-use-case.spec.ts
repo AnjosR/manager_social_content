@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
+import { InvalidRoleError } from '#src/application/erros/invalid-role-error'
 import type { PasswordHasher } from '#src/application/interfaces/password-hasher'
-import type { UserRepository } from '#src/application/interfaces/user-repository'
+import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
 import { SignUpUseCase, type SignUpInput } from '#src/application/sign-up-use-case'
-import { Email } from '#src/domain/email'
-import { Password } from '#src/domain/password'
+import { Email } from '#src/domain/value-objects/email'
+import { Password } from '#src/domain/value-objects/password'
 
 describe('Sign Up UseCase', () => {
   let input: SignUpInput
@@ -19,9 +20,11 @@ describe('Sign Up UseCase', () => {
       name: 'joe Doe',
       email: 'joe@doe.com',
       password: '1@3Ksl.@#sao',
+      role: 'Admin',
     }
 
     userRepository = mock<UserRepository>()
+    userRepository.findByEmail.mockResolvedValue(null)
     passwordHasher = mock<PasswordHasher>()
     passwordHash = 'hashed_password'
     passwordHasher.hash.mockResolvedValue(passwordHash)
@@ -40,6 +43,7 @@ describe('Sign Up UseCase', () => {
 
     expect(passwordHasher.hash).toHaveBeenCalledWith(new Password(input.password))
   })
+
   it('Should garanted IdGenerator is called for generate new ID for user', async () => {
     const userCreated = await sut.execute(input)
 
@@ -70,5 +74,11 @@ describe('Sign Up UseCase', () => {
     const output = await sut.execute(input)
 
     expect(output.createdAt).toBeInstanceOf(Date)
+  })
+
+  it('Should throw InvalidRoleError when role is invalid', async () => {
+    input.role = 'INVALID_ROLE'
+
+    await expect(sut.execute(input)).rejects.toThrow(InvalidRoleError)
   })
 })

@@ -1,5 +1,5 @@
 import { InvalidNameError } from '#src/domain/errors/name.error'
-import { Name } from '#src/domain/name'
+import { Name } from '#src/domain/value-objects/name'
 
 describe('Name Entity', () => {
   it.each(['', '  ', 'ab'])('Should throw InvalidNameError when name is invalid: "%s"', (invalidName) => {

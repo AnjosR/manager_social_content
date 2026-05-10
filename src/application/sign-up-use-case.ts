@@ -1,17 +1,19 @@
-import { Email } from '#src/domain/email'
-import { User } from '#src/domain/entity/user'
-import { InvalidEmailError } from '#src/domain/errors/email.error'
-import { Name } from '#src/domain/name'
-import { Password } from '#src/domain/password'
+import { User, userRole } from '#src/domain/entity/user'
+import { Email } from '#src/domain/value-objects/email'
+import { Name } from '#src/domain/value-objects/name'
+import { Password } from '#src/domain/value-objects/password'
 
+import { EmailAlreadyExistsError } from './erros/email-exists-error.js'
+import { InvalidRoleError } from './erros/invalid-role-error.js'
 import type { PasswordHasher } from './interfaces/password-hasher.js'
+import type { UserRepository } from './interfaces/repositories/user-repository.js'
 import type { UseCase } from './interfaces/use-case.js'
-import type { UserRepository } from './interfaces/user-repository.js'
 
 export type SignUpInput = {
   name: string
   email: string
   password: string
+  role: string
 }
 
 export type SignUpOutput = {
@@ -26,24 +28,30 @@ export class SignUpUseCase implements UseCase<SignUpInput, SignUpOutput> {
     private readonly passwordHasher: PasswordHasher,
   ) {}
 
-  async execute({ name, email, password }: SignUpInput): Promise<SignUpOutput> {
-    const normalizedName = new Name(name)
-    const normalizedEmail = new Email(email)
-    const normalizedPassword = new Password(password)
+  async execute(input: SignUpInput): Promise<SignUpOutput> {
+    const normalizedName = new Name(input.name)
+    const normalizedEmail = new Email(input.email)
+    const normalizedPassword = new Password(input.password)
 
     const emailExists = await this.userRepository.findByEmail(normalizedEmail)
     if (emailExists) {
-      throw new InvalidEmailError('Email Already Exists')
+      throw new EmailAlreadyExistsError('Email Already Exists')
     }
 
     const passwordHash = await this.passwordHasher.hash(normalizedPassword)
     const createdAt = new Date()
+
+    if (!Object.values(userRole).includes(input.role as userRole)) {
+      throw new InvalidRoleError()
+    }
+    const role = input.role as userRole
 
     const user = new User({
       name: normalizedName.getValue(),
       email: normalizedEmail.getValue(),
       passwordHash,
       createdAt,
+      role,
     })
     await this.userRepository.save(user)
 

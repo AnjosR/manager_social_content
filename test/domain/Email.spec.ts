@@ -1,5 +1,5 @@
-import { Email } from '#src/domain/email'
 import { InvalidEmailError } from '#src/domain/errors/email.error'
+import { Email } from '#src/domain/value-objects/email'
 
 describe('Email Entity', () => {
   it.each([

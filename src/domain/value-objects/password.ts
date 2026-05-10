@@ -1,4 +1,4 @@
-import { InvalidPasswordError } from './errors/password.error.js'
+import { InvalidPasswordError } from '../errors/password.error.js'
 
 export class Password {
   constructor(private readonly value: string) {

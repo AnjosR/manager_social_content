@@ -1,11 +1,10 @@
-import { Email } from '#src/domain/email'
-import { Password } from '#src/domain/password'
+import { Email } from '#src/domain/value-objects/email'
 
 import { InvalidCredentialsError } from './erros/invalid-credentials-error.js'
 import type { HashComparer } from './interfaces/hash-comparer.js'
+import type { UserRepository } from './interfaces/repositories/user-repository.js'
 import type { TokenGenerator } from './interfaces/token-generator.js'
 import type { UseCase } from './interfaces/use-case.js'
-import type { UserRepository } from './interfaces/user-repository.js'
 
 export type SignInInput = {
   email: string
@@ -24,19 +23,21 @@ export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
 
   async execute(input: SignInInput): Promise<SignInOutput> {
     const normalizedEmail = new Email(input.email)
-    const normalizedPassword = new Password(input.password)
 
     const user = await this.userRepository.findByEmail(normalizedEmail)
     if (!user) {
       throw new InvalidCredentialsError()
     }
 
-    const passwordMatches = await this.hashComparer.compare(normalizedPassword, user.hashedPassword)
+    const passwordMatches = await this.hashComparer.compare(input.password, user.passwordHash)
     if (!passwordMatches) {
       throw new InvalidCredentialsError()
     }
 
-    const accessToken = await this.tokenGenerator.generate(user.id)
+    const accessToken = await this.tokenGenerator.generate({
+      sub: user.id,
+      role: user.role,
+    })
     return { accessToken }
   }
 }

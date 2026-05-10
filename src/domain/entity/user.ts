@@ -1,9 +1,14 @@
 import { Entity } from './entity.js'
 
+export enum userRole {
+  ADMIN = 'Admin',
+  EDITOR = 'Editor',
+}
 type UserProps = {
   name: string
   email: string
   passwordHash: string
+  role: userRole
   createdAt: Date
 }
 
@@ -16,5 +21,11 @@ export class User extends Entity<UserProps> {
   }
   get passwordHash() {
     return this.props.passwordHash
+  }
+  get createdAt() {
+    return this.props.createdAt
+  }
+  get role() {
+    return this.props.role
   }
 }
