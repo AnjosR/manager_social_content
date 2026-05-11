@@ -3,11 +3,11 @@ import { Email } from '#src/domain/value-objects/email'
 import { Name } from '#src/domain/value-objects/name'
 import { Password } from '#src/domain/value-objects/password'
 
-import { EmailAlreadyExistsError } from './erros/email-exists-error.js'
-import { InvalidRoleError } from './erros/invalid-role-error.js'
-import type { PasswordHasher } from './interfaces/password-hasher.js'
-import type { UserRepository } from './interfaces/repositories/user-repository.js'
-import type { UseCase } from './interfaces/use-case.js'
+import { EmailAlreadyExistsError } from './errors/email-exists-error.js'
+import { InvalidRoleError } from './errors/invalid-role-error.js'
+import type { PasswordHasher } from '../../interfaces/password-hasher.js'
+import type { UserRepository } from '../../interfaces/repositories/user-repository.js'
+import type { UseCase } from '../../interfaces/use-case.js'
 
 export type SignUpInput = {
   name: string

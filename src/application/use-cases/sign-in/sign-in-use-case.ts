@@ -1,10 +1,10 @@
 import { Email } from '#src/domain/value-objects/email'
 
-import { InvalidCredentialsError } from './erros/invalid-credentials-error.js'
-import type { HashComparer } from './interfaces/hash-comparer.js'
-import type { UserRepository } from './interfaces/repositories/user-repository.js'
-import type { TokenGenerator } from './interfaces/token-generator.js'
-import type { UseCase } from './interfaces/use-case.js'
+import { InvalidCredentialsError } from './errors/invalid-credentials-error.js'
+import type { HashComparer } from '../../interfaces/hash-comparer.js'
+import type { UserRepository } from '../../interfaces/repositories/user-repository.js'
+import type { TokenGenerator } from '../../interfaces/token-generator.js'
+import type { UseCase } from '../../interfaces/use-case.js'
 
 export type SignInInput = {
   email: string
