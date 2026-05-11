@@ -2,17 +2,18 @@
 
 ## 1. Visão Geral
 
-Permite a remoção de uma ação (conteúdo) da vitrine pública. A remoção é restrita: somente um usuário com role **`ADMIN`** que **também** seja o autor do conteúdo pode executá-la.
+Permite a remoção de uma ação (conteúdo) da vitrine pública. A remoção é permitida quando o usuário é **autor do conteúdo** **OU** possui role **`ADMIN`** — ou seja, basta uma das condições para autorizar.
 
 ## 2. Atores
 
-- **Administrador autor**: usuário autenticado com role `ADMIN` que originalmente publicou o conteúdo.
+- **Autor do conteúdo**: usuário autenticado cujo `id` corresponde ao `authorId` do conteúdo. Pode remover apenas o conteúdo que publicou.
+- **Administrador**: usuário autenticado com role `ADMIN`. Pode remover qualquer conteúdo, sendo o autor ou não.
 
 ## 3. Pré-condições
 
 - O `userId` precisa corresponder a um usuário existente.
 - O `contentId` precisa corresponder a um conteúdo existente.
-- O usuário precisa atender simultaneamente:
+- O usuário precisa atender a **pelo menos uma** das condições:
   - `user.role === userRole.ADMIN`
   - `user.id === content.authorId`
 
@@ -51,26 +52,24 @@ type RemoveContentOutput = {
 3. Avalia a autorização:
    - `isAdmin` = `user.role === userRole.ADMIN`
    - `isAuthor` = `user.id.toString() === content.authorId`
-4. Se **ambas** as condições forem verdadeiras, executa `ContentRepository.delete`.
+4. Se **pelo menos uma** das condições for verdadeira, executa `ContentRepository.delete`.
 5. Retorna `{ removedContent, deletedBy: userId, deletedAt: new Date().toISOString() }`.
 
 ## 7. Fluxos de Exceção
 
-| Cenário                                           | Erro                   |
-| :------------------------------------------------ | :--------------------- |
-| Usuário não encontrado                            | `EditorNotExistsError` |
-| Conteúdo não encontrado                           | `ContentNotFoundError` |
-| Usuário é o autor mas **não** é ADMIN             | `NotAllowedError`      |
-| Usuário é ADMIN mas **não** é o autor do conteúdo | `NotAllowedError`      |
-| Usuário não é ADMIN nem é o autor                 | `NotAllowedError`      |
+| Cenário                           | Erro                   |
+| :-------------------------------- | :--------------------- |
+| Usuário não encontrado            | `EditorNotExistsError` |
+| Conteúdo não encontrado           | `ContentNotFoundError` |
+| Usuário não é ADMIN nem é o autor | `NotAllowedError`      |
 
-> A regra exige **conjunção** (`AND`): basta uma das condições falhar para a remoção ser proibida.
+> A regra é **disjunção** (`OR`): a remoção só é proibida quando o usuário **não** é ADMIN **e** **não** é o autor do conteúdo.
 
 ## 8. Regras de Negócio
 
 Regra específica deste caso de uso (não listada no PRD original):
 
-- **RN-RC01** — Apenas usuários com role `ADMIN` que também sejam autores do conteúdo podem removê-lo.
+- **RN-RC01** — Podem remover conteúdo: (a) o autor do conteúdo, ou (b) usuários com role `ADMIN`. O ADMIN pode remover qualquer conteúdo, sendo o autor ou não.
 
 ## 9. Pós-condições
 

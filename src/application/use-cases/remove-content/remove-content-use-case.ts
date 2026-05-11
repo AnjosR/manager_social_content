@@ -39,7 +39,7 @@ export class RemoveContentUseCase implements UseCase<RemoveContentInput, RemoveC
     const isAdmin = user.role === userRole.ADMIN
     const isAuthor = user.id.toString() === content.authorId
 
-    if (!isAdmin || !isAuthor) {
+    if (!isAdmin && !isAuthor) {
       throw new NotAllowedError()
     }
 

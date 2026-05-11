@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
-import { ContentNotFoundError } from '#src/application/erros/content-not-found-error'
 import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
 import { EditorNotExistsError } from '#src/application/erros/editor-not-exists-error'
 import { NotAllowedError } from '#src/application/erros/not-allowed-error'
 import type { ContentRepository } from '#src/application/interfaces/repositories/content-repository'
 import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
-import { RemoveContentUseCase } from '#src/application/remove-content-use-case'
+import { ContentNotFoundError } from '#src/application/use-cases/remove-content/errors/content-not-found-error'
+import { RemoveContentUseCase } from '#src/application/use-cases/remove-content/remove-content-use-case'
 import type { Content } from '#src/domain/entity/content'
 import { userRole, type User } from '#src/domain/entity/user'
 import { UniqueEntityId } from '#src/domain/value-objects/uniqueId'
@@ -78,7 +78,23 @@ describe('RemoveContent UseCase', () => {
       expect(contentRepository.findById).toHaveBeenLastCalledWith(new UniqueEntityId(input.contentId))
     })
 
-    it('Should call contentRepository.delete with normalized contentId when user is admin and author', async () => {
+    it('Should call contentRepository.delete with normalized contentId when user is admin', async () => {
+      await sut.execute(input)
+
+      expect(contentRepository.delete).toHaveBeenLastCalledWith(new UniqueEntityId(input.contentId))
+    })
+
+    it('Should call contentRepository.delete when user is ADMIN but is not the author', async () => {
+      const otherAuthorContent = {
+        id: mockContentId,
+        authorId: new UniqueEntityId().toString(),
+        title: 'any_title',
+        description: 'any_description',
+        Actiondate: new Date(),
+        imagesUrl: ['any_url'],
+      } as unknown as Content
+      contentRepository.findById.mockResolvedValueOnce(otherAuthorContent)
+
       await sut.execute(input)
 
       expect(contentRepository.delete).toHaveBeenLastCalledWith(new UniqueEntityId(input.contentId))
@@ -105,7 +121,7 @@ describe('RemoveContent UseCase', () => {
       await expect(sut.execute(input)).rejects.toThrow(ContentNotFoundError)
     })
 
-    it('Should throw NotAllowedError when user is the author but is not ADMIN', async () => {
+    it('Should call contentRepository.delete when user is the author but is not ADMIN', async () => {
       const editorUser = {
         id: mockUserId,
         name: 'any_name',
@@ -116,21 +132,9 @@ describe('RemoveContent UseCase', () => {
       } as unknown as User
       userRepository.findById.mockResolvedValueOnce(editorUser)
 
-      await expect(sut.execute(input)).rejects.toThrow(NotAllowedError)
-    })
+      await sut.execute(input)
 
-    it('Should throw NotAllowedError when user is ADMIN but is not the author', async () => {
-      const otherAuthorContent = {
-        id: mockContentId,
-        authorId: new UniqueEntityId().toString(),
-        title: 'any_title',
-        description: 'any_description',
-        Actiondate: new Date(),
-        imagesUrl: ['any_url'],
-      } as unknown as Content
-      contentRepository.findById.mockResolvedValueOnce(otherAuthorContent)
-
-      await expect(sut.execute(input)).rejects.toThrow(NotAllowedError)
+      expect(contentRepository.delete).toHaveBeenLastCalledWith(new UniqueEntityId(input.contentId))
     })
 
     it('Should throw NotAllowedError when user is neither ADMIN nor the author', async () => {
@@ -165,7 +169,16 @@ describe('RemoveContent UseCase', () => {
         role: userRole.EDITOR,
         createdAt: new Date(),
       } as unknown as User
+      const otherAuthorContent = {
+        id: mockContentId,
+        authorId: new UniqueEntityId().toString(),
+        title: 'any_title',
+        description: 'any_description',
+        Actiondate: new Date(),
+        imagesUrl: ['any_url'],
+      } as unknown as Content
       userRepository.findById.mockResolvedValueOnce(editorUser)
+      contentRepository.findById.mockResolvedValueOnce(otherAuthorContent)
 
       await expect(sut.execute(input)).rejects.toThrow(NotAllowedError)
       expect(contentRepository.delete).not.toHaveBeenCalled()
