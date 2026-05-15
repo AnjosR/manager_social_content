@@ -3,10 +3,10 @@ import { mock, type MockProxy } from 'vitest-mock-extended'
 
 import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
 import { EditorNotExistsError } from '#src/application/erros/editor-not-exists-error'
-import { InvalidContentError } from '#src/application/erros/invalid-content-error'
 import type { ContentRepository } from '#src/application/interfaces/repositories/content-repository'
 import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
-import { RegisterContentUseCase } from '#src/application/register-content-use-case'
+import { InvalidContentError } from '#src/application/use-cases/register-content/errors/invalid-content-error'
+import { RegisterContentUseCase } from '#src/application/use-cases/register-content/register-content-use-case'
 import { userRole, type User } from '#src/domain/entity/user'
 import { UniqueEntityId } from '#src/domain/value-objects/uniqueId'
 

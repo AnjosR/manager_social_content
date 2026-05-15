@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
-import { InvalidRoleError } from '#src/application/erros/invalid-role-error'
 import type { PasswordHasher } from '#src/application/interfaces/password-hasher'
 import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
+import { InvalidRoleError } from '#src/application/use-cases/sign-up/errors/invalid-role-error'
 import { SignUpUseCase, type SignUpInput } from '#src/application/use-cases/sign-up/sign-up-use-case'
 import { Email } from '#src/domain/value-objects/email'
 import { Password } from '#src/domain/value-objects/password'
