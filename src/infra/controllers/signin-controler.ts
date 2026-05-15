@@ -5,7 +5,7 @@ import type { Controller } from '../interface/controller.js'
 type SignInPayload = SignUpInput
 
 export class SignInController implements Controller<SignInPayload, unknown> {
-  async validate(input: unknown): Promise<unknown> {
+  async validate(_input: unknown): Promise<unknown> {
     return null
   }
 
