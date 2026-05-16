@@ -9,7 +9,7 @@ type SignInResponseBody = { accessToken: string } | { message: string }
 
 type validatedResult = { valid: true; body: SignInInput } | { valid: false; message: string }
 
-export class SignInController implements Controller<unknown, SignInResponseBody> {
+export class SignInController implements Controller<SignInInput, SignInResponseBody> {
   constructor(private readonly signIn: SignInUseCaseInterface) {}
 
   async handle(request: HttpRequest): Promise<HttpResponse<SignInResponseBody>> {
