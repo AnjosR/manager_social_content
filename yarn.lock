@@ -2578,6 +2578,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:^6.2.3":
+  version: 6.2.3
+  resolution: "jose@npm:6.2.3"
+  checksum: 10c0/aa91bccba22cc84d86308f833749bcb0b00441e35c24e0ac79abeac5f76dc62d47bdef9c1da6a0c609f5da6478595f52b252085888b89dbdb163861e40ea4188
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^10.0.0":
   version: 10.0.0
   resolution: "js-tokens@npm:10.0.0"
@@ -4043,6 +4050,7 @@ __metadata:
     eslint-plugin-promise: "npm:^7"
     globals: "npm:^17.5.0"
     husky: "npm:^9.1.7"
+    jose: "npm:^6.2.3"
     lint-staged: "npm:^15"
     pino: "npm:^10.3.1"
     prettier: "npm:^3"

@@ -1,8 +1,8 @@
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
 import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
+import { InvalidTokenError } from '#src/application/erros/invalid-token-error'
 import type { Payload, TokenDisabler, TokenVerifier } from '#src/application/interfaces/token-manipulate'
-import { InvalidTokenError } from '#src/application/use-cases/sign-out/errors/invalid-token-error'
 import { SignOutUseCase, type SignOutInput } from '#src/application/use-cases/sign-out/sign-out-use-case'
 import { userRole } from '#src/domain/entity/user'
 import { UniqueEntityId } from '#src/domain/value-objects/uniqueId'

@@ -1,7 +1,6 @@
+import { InvalidTokenError } from '#src/application/erros/invalid-token-error'
 import type { TokenDisabler, TokenVerifier } from '#src/application/interfaces/token-manipulate'
 import type { UseCase } from '#src/application/interfaces/use-case'
-
-import { InvalidTokenError } from './errors/invalid-token-error.js'
 
 export type SignOutInput = {
   userToken: string
