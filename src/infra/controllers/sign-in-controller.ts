@@ -4,13 +4,17 @@ import { InvalidEmailError } from '#src/domain/errors/email-error'
 
 import type { Controller } from '../interface/controller.js'
 import type { HttpRequest, HttpResponse } from '../interface/http.js'
+import type { Logger } from '../interface/logger.js'
 
 type SignInResponseBody = { accessToken: string } | { message: string }
 
 type validatedResult = { valid: true; body: SignInInput } | { valid: false; message: string }
 
 export class SignInController implements Controller<SignInInput, SignInResponseBody> {
-  constructor(private readonly signIn: SignInUseCaseInterface) {}
+  constructor(
+    private readonly signIn: SignInUseCaseInterface,
+    private readonly logger: Logger,
+  ) {}
 
   async handle(request: HttpRequest): Promise<HttpResponse<SignInResponseBody>> {
     const validation = this.validate(request.body)
@@ -25,6 +29,8 @@ export class SignInController implements Controller<SignInInput, SignInResponseB
       if (error instanceof InvalidCredentialsError || error instanceof InvalidEmailError) {
         return { statusCode: 401, body: { message: 'Invalid credentials' } }
       }
+      const cause = error instanceof Error ? error : new Error(String(error))
+      this.logger.error('SignIn unexpected failure', cause, { email: validation.body.email })
       return { statusCode: 500, body: { message: 'Internal server error' } }
     }
   }
