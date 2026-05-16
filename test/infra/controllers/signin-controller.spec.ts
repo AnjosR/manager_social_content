@@ -6,8 +6,8 @@ import { HashComparerError } from '#src/application/erros/hash-comparer-error'
 import { TokenGenerationError } from '#src/application/erros/token-generator-error'
 import { InvalidCredentialsError } from '#src/application/use-cases/sign-in/errors/invalid-credentials-error'
 import type { SignInInput, SignInOutput, SignInUseCase } from '#src/application/use-cases/sign-in/sign-in-use-case'
-import { InvalidEmailError } from '#src/domain/errors/email.error'
-import { SignInController } from '#src/infra/controllers/signin-controller'
+import { InvalidEmailError } from '#src/domain/errors/email-error'
+import { SignInController } from '#src/infra/controllers/sign-in-controller'
 import type { HttpRequest } from '#src/infra/interface/http'
 
 describe('SignInController', () => {

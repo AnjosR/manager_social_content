@@ -1,4 +1,4 @@
-import { InvalidEmailError } from '#src/domain/errors/email.error'
+import { InvalidEmailError } from '#src/domain/errors/email-error'
 import { Email } from '#src/domain/value-objects/email'
 
 describe('Email Entity', () => {

@@ -1,4 +1,4 @@
-import { InvalidNameError } from '../errors/name.error.js'
+import { InvalidNameError } from '../errors/name-error.js'
 
 export class Name {
   private static readonly MIN_CHARACTERS = 3

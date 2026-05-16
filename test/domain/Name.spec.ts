@@ -1,4 +1,4 @@
-import { InvalidNameError } from '#src/domain/errors/name.error'
+import { InvalidNameError } from '#src/domain/errors/name-error'
 import { Name } from '#src/domain/value-objects/name'
 
 describe('Name Entity', () => {

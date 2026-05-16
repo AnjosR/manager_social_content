@@ -1,6 +1,6 @@
 import { InvalidCredentialsError } from '#src/application/use-cases/sign-in/errors/invalid-credentials-error'
 import type { SignInInput, SignInUseCaseInterface } from '#src/application/use-cases/sign-in/sign-in-use-case'
-import { InvalidEmailError } from '#src/domain/errors/email.error'
+import { InvalidEmailError } from '#src/domain/errors/email-error'
 
 import type { Controller } from '../interface/controller.js'
 import type { HttpRequest, HttpResponse } from '../interface/http.js'
