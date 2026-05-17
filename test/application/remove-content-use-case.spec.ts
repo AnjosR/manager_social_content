@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { mock, type MockProxy } from 'vitest-mock-extended'
 
+import { ContentNotFoundError } from '#src/application/erros/content-not-found-error'
 import { DataBaseConnectionError } from '#src/application/erros/database-connection-error'
 import { EditorNotExistsError } from '#src/application/erros/editor-not-exists-error'
 import { NotAllowedError } from '#src/application/erros/not-allowed-error'
 import type { ContentRepository } from '#src/application/interfaces/repositories/content-repository'
 import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
-import { ContentNotFoundError } from '#src/application/use-cases/remove-content/errors/content-not-found-error'
 import { RemoveContentUseCase } from '#src/application/use-cases/remove-content/remove-content-use-case'
 import type { Content } from '#src/domain/entity/content'
 import { userRole, type User } from '#src/domain/entity/user'

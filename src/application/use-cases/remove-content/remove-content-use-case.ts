@@ -2,7 +2,7 @@ import type { Content } from '#src/domain/entity/content'
 import { userRole } from '#src/domain/entity/user'
 import { UniqueEntityId } from '#src/domain/value-objects/uniqueId'
 
-import { ContentNotFoundError } from './errors/content-not-found-error.js'
+import { ContentNotFoundError } from '../../erros/content-not-found-error.js'
 import { EditorNotExistsError } from '../../erros/editor-not-exists-error.js'
 import { NotAllowedError } from '../../erros/not-allowed-error.js'
 import type { ContentRepository } from '../../interfaces/repositories/content-repository.js'
