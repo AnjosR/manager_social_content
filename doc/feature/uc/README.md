@@ -13,6 +13,9 @@ Esta pasta documenta cada caso de uso da camada de aplicação do CMS, seguindo 
 ### Módulo de Conteúdo (Ações da ONG)
 
 - [RegisterContentUseCase](./register-content.md) — Cadastro de uma nova ação publicada por um editor.
+- [GetContentByIdUseCase](./get-content-by-id.md) — Recupera os detalhes de uma ação pelo `id`.
+- [ListContentsUseCase](./list-contents.md) — Lista paginada de ações para a vitrine pública.
+- [UpdateContentUseCase](./update-content.md) — Edição parcial de uma ação por autor ou administrador.
 - [RemoveContentUseCase](./remove-content.md) — Remoção de uma ação por um administrador autor.
 
 ---
