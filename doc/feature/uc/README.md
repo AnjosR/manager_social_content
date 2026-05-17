@@ -8,6 +8,7 @@ Esta pasta documenta cada caso de uso da camada de aplicação do CMS, seguindo 
 
 - [SignUpUseCase](./sign-up.md) — Cadastro de novo administrador no CMS.
 - [SignInUseCase](./sign-in.md) — Autenticação de administrador e geração de token de acesso.
+- [RemoveUserUseCase](./remove-user.md) — Remoção (soft delete) de um usuário por um administrador.
 
 ### Módulo de Conteúdo (Ações da ONG)
 

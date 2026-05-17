@@ -8,6 +8,7 @@ export type UserRow = {
   password_hash: string
   role: string
   created_at: Date
+  deleted_at: Date | null
 }
 
 export class InvalidUserRowError extends Error {
@@ -32,6 +33,7 @@ function toEntity(row: UserRow): User {
       passwordHash: row.password_hash,
       role: parseRole(row.role),
       createdAt: row.created_at,
+      deletedAt: row.deleted_at,
     },
     new UniqueEntityId(row.id),
   )
@@ -45,6 +47,7 @@ function toPersistence(user: User): UserRow {
     password_hash: user.passwordHash,
     role: user.role,
     created_at: user.createdAt,
+    deleted_at: user.deletedAt,
   }
 }
 

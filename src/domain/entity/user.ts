@@ -10,6 +10,7 @@ type UserProps = {
   passwordHash: string
   role: userRole
   createdAt: Date
+  deletedAt?: Date | null
 }
 
 export class User extends Entity<UserProps> {
@@ -27,5 +28,8 @@ export class User extends Entity<UserProps> {
   }
   get role() {
     return this.props.role
+  }
+  get deletedAt(): Date | null {
+    return this.props.deletedAt ?? null
   }
 }

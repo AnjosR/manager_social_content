@@ -13,11 +13,12 @@ function buildRow(overrides: Partial<UserRow> = {}): UserRow {
     password_hash: '$2b$10$abc',
     role: 'Editor',
     created_at: CREATED_AT,
+    deleted_at: null,
     ...overrides,
   }
 }
 
-function buildUser(): User {
+function buildUser(deletedAt: Date | null = null): User {
   return new User(
     {
       name: 'João da Silva',
@@ -25,6 +26,7 @@ function buildUser(): User {
       passwordHash: '$2b$10$abc',
       role: userRole.EDITOR,
       createdAt: CREATED_AT,
+      deletedAt,
     },
     new UniqueEntityId(VALID_ID),
   )
@@ -53,6 +55,19 @@ describe('UserMapper', () => {
       expect(entity.createdAt).toBe(CREATED_AT)
     })
 
+    it('Should map deleted_at = null to entity.deletedAt = null', () => {
+      const entity = UserMapper.toEntity(buildRow({ deleted_at: null }))
+
+      expect(entity.deletedAt).toBeNull()
+    })
+
+    it('Should preserve deleted_at when the user is soft-deleted', () => {
+      const deletedAt = new Date('2026-06-01T09:00:00Z')
+      const entity = UserMapper.toEntity(buildRow({ deleted_at: deletedAt }))
+
+      expect(entity.deletedAt).toBe(deletedAt)
+    })
+
     it('Should map role string "Editor" to userRole.EDITOR', () => {
       const entity = UserMapper.toEntity(buildRow({ role: 'Editor' }))
 
@@ -74,7 +89,28 @@ describe('UserMapper', () => {
     it('Should expose every schema column', () => {
       const row = UserMapper.toPersistence(buildUser())
 
-      expect(Object.keys(row).sort()).toStrictEqual(['created_at', 'email', 'id', 'name', 'password_hash', 'role'])
+      expect(Object.keys(row).sort()).toStrictEqual([
+        'created_at',
+        'deleted_at',
+        'email',
+        'id',
+        'name',
+        'password_hash',
+        'role',
+      ])
+    })
+
+    it('Should serialize deletedAt = null as deleted_at = null', () => {
+      const row = UserMapper.toPersistence(buildUser(null))
+
+      expect(row.deleted_at).toBeNull()
+    })
+
+    it('Should serialize deletedAt Date as deleted_at Date', () => {
+      const deletedAt = new Date('2026-06-01T09:00:00Z')
+      const row = UserMapper.toPersistence(buildUser(deletedAt))
+
+      expect(row.deleted_at).toBe(deletedAt)
     })
 
     it('Should serialize user.id via toValue()', () => {
@@ -116,6 +152,7 @@ describe('UserMapper', () => {
       expect(reconstructed.passwordHash).toBe(original.passwordHash)
       expect(reconstructed.role).toBe(original.role)
       expect(reconstructed.createdAt).toBe(original.createdAt)
+      expect(reconstructed.deletedAt).toBe(original.deletedAt)
     })
 
     it('toPersistence(toEntity(row)) should produce an equivalent row', () => {
