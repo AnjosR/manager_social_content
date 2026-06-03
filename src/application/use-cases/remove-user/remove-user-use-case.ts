@@ -44,7 +44,7 @@ export class RemoveUserUseCase implements UseCase<RemoveUserInput, RemoveUserOut
     }
 
     const deletedAt = new Date()
-    await this.userRepository.softDelete(new UniqueEntityId(input.targetUserId), deletedAt)
+    await this.userRepository.delete(new UniqueEntityId(input.targetUserId), deletedAt)
 
     return {
       removedUserId: input.targetUserId,

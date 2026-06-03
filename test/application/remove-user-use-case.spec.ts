@@ -51,7 +51,7 @@ describe('RemoveUser UseCase', () => {
       return null
     })
     userRepository.countActiveAdmins.mockResolvedValue(2)
-    userRepository.softDelete.mockResolvedValue(undefined)
+    userRepository.delete.mockResolvedValue(undefined)
 
     input = {
       userId: requesterId.toString(),
@@ -77,7 +77,7 @@ describe('RemoveUser UseCase', () => {
     it('Should call userRepository.softDelete with the normalized targetUserId when requester is ADMIN and target is another user', async () => {
       await sut.execute(input)
 
-      expect(userRepository.softDelete).toHaveBeenCalledWith(new UniqueEntityId(input.targetUserId), expect.any(Date))
+      expect(userRepository.delete).toHaveBeenCalledWith(new UniqueEntityId(input.targetUserId), expect.any(Date))
     })
 
     it('Should call userRepository.softDelete when ADMIN removes self and other active admins exist', async () => {
@@ -89,10 +89,7 @@ describe('RemoveUser UseCase', () => {
 
       await sut.execute(selfInput)
 
-      expect(userRepository.softDelete).toHaveBeenCalledWith(
-        new UniqueEntityId(selfInput.targetUserId),
-        expect.any(Date),
-      )
+      expect(userRepository.delete).toHaveBeenCalledWith(new UniqueEntityId(selfInput.targetUserId), expect.any(Date))
     })
 
     it('Should call userRepository.countActiveAdmins when userId === targetUserId (self-removal)', async () => {
@@ -171,7 +168,7 @@ describe('RemoveUser UseCase', () => {
       })
 
       await expect(sut.execute(input)).rejects.toThrow(NotAllowedError)
-      expect(userRepository.softDelete).not.toHaveBeenCalled()
+      expect(userRepository.delete).not.toHaveBeenCalled()
     })
 
     it('Should NOT call userRepository.softDelete when the target is not found', async () => {
@@ -182,7 +179,7 @@ describe('RemoveUser UseCase', () => {
       })
 
       await expect(sut.execute(input)).rejects.toThrow(EditorNotExistsError)
-      expect(userRepository.softDelete).not.toHaveBeenCalled()
+      expect(userRepository.delete).not.toHaveBeenCalled()
     })
 
     it('Should NOT call userRepository.softDelete when self-removal hits the last-admin rule', async () => {
@@ -193,7 +190,7 @@ describe('RemoveUser UseCase', () => {
       userRepository.countActiveAdmins.mockResolvedValueOnce(1)
 
       await expect(sut.execute(selfInput)).rejects.toThrow(LastAdminCannotBeRemovedError)
-      expect(userRepository.softDelete).not.toHaveBeenCalled()
+      expect(userRepository.delete).not.toHaveBeenCalled()
     })
   })
 
@@ -219,7 +216,7 @@ describe('RemoveUser UseCase', () => {
     })
 
     it('Should propagate the exception when userRepository.softDelete fails', async () => {
-      userRepository.softDelete.mockImplementation(() => {
+      userRepository.delete.mockImplementation(() => {
         throw new DataBaseConnectionError()
       })
 
