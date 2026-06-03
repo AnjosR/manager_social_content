@@ -1,1 +1,0 @@
-- Alterar os arquivos de teste, pois o "passwordHasher.hash()" recebe string, ao inves do VO Password
