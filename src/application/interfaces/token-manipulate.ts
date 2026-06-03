@@ -6,12 +6,12 @@ export type Payload = {
   role: userRole
 }
 
-export interface TokenGenerator {
-  generate(payload: Payload): Promise<string>
+export interface AccessTokenGenerator {
+  generateToken(payload: Payload): Promise<string>
 }
-export interface TokenVerifier {
-  verify(token: string): Promise<Payload>
+export interface AccessTokenVerifier {
+  verifyToken(token: string): Promise<Payload>
 }
-export interface TokenDisabler {
-  disable(token: string): Promise<void>
+export interface AccessTokenDisabler {
+  disableToken(token: string): Promise<void>
 }

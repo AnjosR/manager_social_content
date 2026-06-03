@@ -8,6 +8,6 @@ export interface UserRepository extends Repository<User> {
   findById(userId: UniqueEntityId): Promise<User | null>
   findByEmail(email: Email): Promise<User | null>
   save(user: User): Promise<void>
+  delete(userId: UniqueEntityId, deletedAt: Date): Promise<void>
   countActiveAdmins(): Promise<number>
-  softDelete(userId: UniqueEntityId, deletedAt: Date): Promise<void>
 }

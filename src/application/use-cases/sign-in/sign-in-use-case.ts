@@ -4,7 +4,7 @@ import { Email } from '#src/domain/value-objects/email'
 import { InvalidCredentialsError } from './errors/invalid-credentials-error.js'
 import type { HashComparer } from '../../interfaces/hash-comparer.js'
 import type { UserRepository } from '../../interfaces/repositories/user-repository.js'
-import type { TokenGenerator } from '../../interfaces/token-manipulate.js'
+import type { AccessTokenGenerator } from '../../interfaces/token-manipulate.js'
 
 export type SignInInput = {
   email: string
@@ -21,7 +21,7 @@ export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly hashComparer: HashComparer,
-    private readonly tokenGenerator: TokenGenerator,
+    private readonly tokenGenerator: AccessTokenGenerator,
   ) {}
 
   async execute(input: SignInInput): Promise<SignInOutput> {
@@ -37,7 +37,7 @@ export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
       throw new InvalidCredentialsError()
     }
 
-    const accessToken = await this.tokenGenerator.generate({
+    const accessToken = await this.tokenGenerator.generateToken({
       sub: user.id,
       role: user.role,
     })
