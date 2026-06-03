@@ -15,6 +15,8 @@ export type SignInOutput = {
   accessToken: string
 }
 
+export type SignInInterface = UseCase<SignInInput, SignInOutput>
+
 export type SignInUseCaseInterface = UseCase<SignInInput, SignInOutput>
 
 export class SignInUseCase implements UseCase<SignInInput, SignInOutput> {
