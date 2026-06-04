@@ -1,14 +1,15 @@
+import { InvalidCredentialsError } from '#src/application/use-cases/sign-in/errors/invalid-credentials-error'
 import type { SignInInput, SignInInterface, SignInOutput } from '#src/application/use-cases/sign-in/sign-in-use-case'
 
 import type { Controller, Request, Response } from '../interface/controller.js'
 
 type ResquestBody = SignInInput
-type ResponseBody = SignInOutput
+type ResponseBody = Partial<SignInOutput> & { errorMessage?: string }
 
 export class SignInController implements Controller<ResquestBody, ResponseBody> {
-  constructor(private readonly signIpUseCase: SignInInterface) {}
+  constructor(private readonly signInUseCase: SignInInterface) {}
 
-  async handle(request: Request<SignInInput>): Promise<Response<SignInOutput>> {
+  async handle(request: Request<SignInInput>): Promise<Response<ResponseBody>> {
     const { body } = request
 
     const input: SignInInput = {
@@ -16,13 +17,31 @@ export class SignInController implements Controller<ResquestBody, ResponseBody> 
       password: body?.password ?? '',
     }
 
-    const output = await this.signIpUseCase.execute(input)
+    try {
+      const output = await this.signInUseCase.execute(input)
 
-    return {
-      statusCode: 200,
-      body: {
-        accessToken: output.accessToken,
-      },
+      return {
+        statusCode: 200,
+        body: {
+          accessToken: output.accessToken,
+        },
+      }
+    } catch (error) {
+      if (error instanceof InvalidCredentialsError) {
+        return {
+          statusCode: 401,
+          body: {
+            errorMessage: error.message,
+          },
+        }
+      }
+
+      return {
+        statusCode: 500,
+        body: {
+          errorMessage: 'Internal Server Error',
+        },
+      }
     }
   }
 }
