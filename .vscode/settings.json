@@ -14,7 +14,11 @@
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.enablePromptUseWorkspaceTsdk": true,
   "eslint.run": "onType",
-  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
   "files.eol": "\n",
   "files.exclude": {
     "**/coverage": true,
@@ -33,5 +37,6 @@
   },
   "github.copilot.nextEditSuggestions.enabled": false,
   "github.copilot.editor.enableCodeActions": false,
-  "settingsSync.ignoredExtensions": ["GitHub.copilot", "GitHub.copilot-chat"]
+  "settingsSync.ignoredExtensions": ["GitHub.copilot", "GitHub.copilot-chat"],
+  "discord.enabled": true
 }

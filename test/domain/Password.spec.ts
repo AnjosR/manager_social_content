@@ -1,5 +1,5 @@
-import { InvalidPasswordError } from '#src/domain/errors/password.error'
-import { Password } from '#src/domain/password'
+import { InvalidPasswordError } from '#src/domain/errors/password-error'
+import { Password } from '#src/domain/value-objects/password'
 
 describe('Password Entity', () => {
   it.each([

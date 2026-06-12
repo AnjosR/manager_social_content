@@ -67,7 +67,7 @@ As seguintes regras devem ser rigorosamente validadas na camada de domínio/apli
 - **RN02 - Descrição Obrigatória:** A descrição detalhada não pode estar vazia ou conter apenas espaços.
 - **RN03 - Data da Ação:** A data deve ser um formato válido e não pode ser uma data futura (deve ser igual ou anterior à data atual).
 - **RN04 - Mídia Obrigatória:** É obrigatório o envio de pelo menos 1 (uma) imagem para compor a vitrine visual.
-- **RN05 - Limite de Mídia:** Uma ação pode conter no máximo 10 imagens associadas.
+- **RN05 - Limite de Mídia:** Uma ação pode conter no máximo 6 imagens associadas.
 - **RN06 - Status:** Todo conteúdo recém-criado deve assumir um status inicial pré-definido (ex: `published` ou `draft`).
 
 ### 6.2. Regras para Registro de Usuários (Administradores)
@@ -95,7 +95,6 @@ As seguintes regras devem ser rigorosamente validadas na camada de domínio/apli
 - `title`: String
 - `detailedDescription`: Text
 - `actionDate`: DateTime
-- `participants`: Array de Strings (Opcional)
 - `images`: Array de Strings (URLs geradas pelo storage)
 - `status`: String (Ex: 'published')
 - `createdAt`: DateTime
