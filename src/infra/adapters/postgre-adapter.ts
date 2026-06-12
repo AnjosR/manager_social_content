@@ -4,6 +4,9 @@ import type { Email } from '#src/domain/value-objects/email'
 import type { UniqueEntityId } from '#src/domain/value-objects/uniqueId'
 
 export class PostgreAdapter implements UserRepository {
+  constructor(
+    private readonly Pool: Pool
+  ){}
   findById(_userId: UniqueEntityId): Promise<User | null> {
     throw new Error('Method not implemented.')
   }

@@ -1,43 +1,43 @@
-import { sign, verify } from 'jsonwebtoken'
+// src/infra/adapters/postgre-adapter.ts
+import type { UserRepository } from '#src/application/interfaces/repositories/user-repository'
+import type { User } from '#src/domain/entity/user'
+import type { Email } from '#src/domain/value-objects/email'
+import type { UniqueEntityId } from '#src/domain/value-objects/uniqueId'
 
-import { InvalidTokenError } from '#src/application/erros/invalid-token-error'
-import type {
-  AccessTokenDisabler,
-  AccessTokenGenerator,
-  AccessTokenVerifier,
-  Payload,
-} from '#src/application/interfaces/token-manipulate'
-import { UniqueEntityId } from '#src/domain/value-objects/uniqueId'
+import type { PostgresConnection } from '../database/connection.js'
+import * as UserMapper from '../database/mappers/user-mapper.js'
+import type { UserRow } from '../database/types/user-row.js'
 
-import { jwtPayloadSchema } from './schemas/jwt-payload-schema.js'
+export class PostgreAdapter implements UserRepository {
+  constructor(private readonly connection: PostgresConnection) {}
 
-export class JwtAdapter implements AccessTokenGenerator, AccessTokenVerifier, AccessTokenDisabler {
-  constructor(private readonly secret: string) {}
+  async findByEmail(email: Email): Promise<User | null> {
+    const { rows } = await this.connection.query(
+      `SELECT id, name, email, password_hash, role, created_at, updated_at, deleted_at
+       FROM users
+       WHERE email = $1 AND deleted_at IS NULL
+       LIMIT 1`,
+      [email.getValue()],
+    )
 
-  async generateToken(payload: Payload): Promise<string> {
-    return sign(payload, this.secret)
+    if (rows.length === 0) return null
+
+    return UserMapper.toEntity(rows[0] as UserRow)
   }
 
-  async verifyToken(token: string): Promise<Payload> {
-    let decoded: unknown
-    try {
-      decoded = verify(token, this.secret)
-    } catch {
-      throw new InvalidTokenError()
-    }
-
-    const result = jwtPayloadSchema.safeParse(decoded)
-    if (!result.success) {
-      throw new InvalidTokenError()
-    }
-
-    return {
-      sub: new UniqueEntityId(result.data.sub),
-      role: result.data.role,
-    }
+  findById(_userId: UniqueEntityId): Promise<User | null> {
+    throw new Error('Method not implemented.')
   }
 
-  async disableToken(token: string): Promise<void> {
+  save(_user: User): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  delete(_userId: UniqueEntityId, _deletedAt: Date): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  countActiveAdmins(): Promise<number> {
     throw new Error('Method not implemented.')
   }
 }
