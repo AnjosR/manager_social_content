@@ -11,6 +11,7 @@ type UserProps = {
   role: userRole
   createdAt: Date
   deletedAt?: Date | null
+  updatedAt?: Date | null
 }
 
 export class User extends Entity<UserProps> {
@@ -23,13 +24,16 @@ export class User extends Entity<UserProps> {
   get passwordHash() {
     return this.props.passwordHash
   }
-  get createdAt() {
-    return this.props.createdAt
-  }
   get role() {
     return this.props.role
   }
+  get createdAt() {
+    return this.props.createdAt
+  }
   get deletedAt(): Date | null {
     return this.props.deletedAt ?? null
+  }
+  get updatedAt(): Date | null {
+    return this.props.updatedAt ?? null
   }
 }
