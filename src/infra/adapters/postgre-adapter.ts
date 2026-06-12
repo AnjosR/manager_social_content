@@ -7,9 +7,11 @@ export class PostgreAdapter implements UserRepository {
   findById(_userId: UniqueEntityId): Promise<User | null> {
     throw new Error('Method not implemented.')
   }
+
   findByEmail(_email: Email): Promise<User | null> {
     throw new Error('Method not implemented.')
   }
+
   save(_user: User): Promise<void> {
     throw new Error('Method not implemented.')
   }
@@ -17,6 +19,7 @@ export class PostgreAdapter implements UserRepository {
   delete(_userId: UniqueEntityId, _deletedAt: Date): Promise<void> {
     throw new Error('Method not implemented.')
   }
+
   countActiveAdmins(): Promise<number> {
     throw new Error('Method not implemented.')
   }
